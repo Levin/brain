@@ -22,8 +22,19 @@ defmodule Brain.BrainScript do
   end
  
   def add_flashcard() do
-    front = IO.gets("what should the front of your flashcard look like?\n") |> cleanup(false)
-    back = IO.gets("what should the back of your flashcard look like?\n") |> cleanup(false)
+    IO.puts("what should the front of your flashcard look like?\n")
+    front = 
+      IO.stream(:stdio, :line)
+      |> Stream.take_while(&(&1 != ":done\n"))
+      |> Enum.to_list()
+      |> Enum.join(" ")
+
+    IO.puts("what should the back of your flashcard look like?\n")
+    back = 
+      IO.stream(:stdio, :line)
+      |> Stream.take_while(&(&1 != ":done\n"))
+      |> Enum.to_list()
+      |> Enum.join(" ")
 
     Brain.Flashcards.create_flashcard(%{front: front, back: back})
 
@@ -49,16 +60,14 @@ defmodule Brain.BrainScript do
   
     word
     |> String.trim()
-    |> String.split("\n")
-    |> List.first()
+    |> String.replace("\n", "")
 
   end
 
   defp cleanup(word, true) do
     word
     |> String.trim()
-    |> String.split("\n")
-    |> List.first()
+    |> String.replace("\n", "")
     |> String.to_integer()
   end
 
