@@ -1,38 +1,64 @@
 defmodule Brain.BrainScript do
 
   def user_prompt() do
-    IO.puts("This is the user manual: ")
-    IO.puts("'f add' <- lets you create a new flashcard")
-    IO.puts("'f del' <- lets you delete an existing flashcard")
-    IO.puts("'f' <- lists all existing s")
+    IO.puts("\n\n\n\n")
+    IO.puts("\tThis is the user manual: ")
+    IO.puts("\t'f add' <- lets you create a new flashcard")
+    IO.puts("\t'f del' <- lets you delete an existing flashcard")
+    IO.puts("\t'f' <- lists all existing flashcards")
+    IO.puts("\t'ask' <- prompts the user with flashcards")
+    IO.puts("\t'ask 'concept/topic'' <- prompts the user with flashcards")
+    IO.puts("\t'q'  <- exit from here")
+    IO.puts("\n\n\n\n\n")
     
-    choice = IO.gets("") |> cleanup(false)
+    choice =
+      IO.gets("\t") 
+      |> cleanup(false)
 
     case choice do
-      "f add" -> add_flashcard()
-      "f del" -> delete_flashcard!()
-      "f" -> list_flashcards()
+      "f add" -> 
+        add_flashcard()
+        user_prompt()
+      "f del" ->
+        delete_flashcard!()
+        user_prompt()
+      "f" -> 
+        list_flashcards()
+        user_prompt()
+      "ask" ->
+        ask_flashcards(String.split(choice, " "))
+        user_prompt()
+      "ask" <> _ -> 
+        ask_flashcards(String.split(choice, " "))
+        user_prompt()
+      _ -> quit()
     end
 
-    quit? = IO.gets("If your done here, just hit 'q': ") |> cleanup(false)
-    case quit? do
-      "q" -> IO.puts("Good job today!")
-      _ -> user_prompt()
-    end
+  end
+
+  def ask_flashcards([_, topic]) do
+    Brain.CardsConcepts.get_flashcards_for_topic(topic)
+    |> Enum.each(fn pair -> promt_flashcard(pair) end)
+  end
+
+  def ask_flashcards(_) do
+    Brain.Flashcards.get_random_flashcard_collection()
+    |> Enum.each(fn pair -> promt_flashcard(pair) end)
   end
  
+
   def add_flashcard() do
-    IO.puts("what should the front of your flashcard look like?\n")
+    IO.puts("\twhat should the front of your flashcard look like?\n")
     front = 
       IO.stream(:stdio, :line)
       |> Stream.take_while(&(&1 != ":done\n"))
       |> Enum.to_list()
       |> Enum.join(" ")
 
-    IO.puts("what should the back of your flashcard look like?\n")
+    IO.puts("\twhat should the back of your flashcard look like?\n")
     back = 
       IO.stream(:stdio, :line)
-      |> Stream.take_while(&(&1 != ":done\n"))
+      |> Stream.take_while(&(&1 != "\t:done\n"))
       |> Enum.to_list()
       |> Enum.join(" ")
 
@@ -42,18 +68,67 @@ defmodule Brain.BrainScript do
   end
 
   def list_flashcards() do
-    flashcards = Brain.Flashcards.list_flashcards()
-
-    for card <- flashcards do
-      IO.puts("#{card.id}")
-      IO.puts("#{card.front}")
-      IO.puts("#{card.back}")
-    end
+    Brain.Flashcards.list_flashcards()
+    |> Enum.map(fn flashcard -> {flashcard.id, flashcard.front, flashcard.back} end)
+    |> Enum.each(fn card -> promt_flashcard(card) end)
   end
 
   def delete_flashcard!() do
-    id = IO.gets("which flashcard should be deleted?\n") |> cleanup(true)
+    id = IO.gets("\twhich flashcard should be deleted?\n") |> cleanup(true)
     Brain.Flashcards.remove_flashcard!(id)
+  end
+
+  def quit() do
+    IO.puts("Well done today!!")
+  end
+
+  defp promt_flashcard({"", front, back}) do
+    IO.puts("\t#{front}\n")
+
+    continue? = IO.gets("\t")
+
+    if(continue? == "\n") do
+      IO.puts("\t#{back}\n")
+    end
+
+    # TODO: give rating
+    #rating = 
+    #  IO.gets("\t(h,m,e): \n")
+    #  |> cleanup(false)
+    # TODO: increase count
+  end
+
+  defp promt_flashcard({id, front, back}) when is_integer(id) do
+    IO.puts("\tID: #{id}\n")
+    IO.puts("\tFront: #{front}\n")
+
+    continue? = IO.gets("\t")
+
+    if(continue? == "\n") do
+      IO.puts("\tBack: #{back}\n")
+    end
+
+    #rating = IO.gets("\t(h,m,e): \n")
+
+    # TODO: increase count
+    # TODO: give rating
+
+  end
+  defp promt_flashcard({topic, front, back}) when is_binary(topic) do
+    IO.puts("\tTopic:\n #{topic}\n")
+    IO.puts("\tFront #{front}\n")
+
+    continue? = IO.gets("\t")
+
+    if(continue? == "\n") do
+      IO.puts("\tBack #{back}\n")
+    end
+
+    #rating = IO.gets("\t(h,m,e): \n")
+
+    # TODO: increase count
+    # TODO: give rating
+
   end
 
   defp cleanup(word, false) do
@@ -70,8 +145,6 @@ defmodule Brain.BrainScript do
     |> String.replace("\n", "")
     |> String.to_integer()
   end
-
-
 end
 
 Brain.BrainScript.user_prompt()

@@ -50,7 +50,8 @@ defmodule Brain.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:libgraph, "~> 0.16.0"}
     ]
   end
 

@@ -1,6 +1,4 @@
 defmodule Brain.Concepts.CardConcept do
-  alias Brain.Concepts.Concept
-  alias Brain.Flashcards.Flashcard
   use Ecto.Schema
   import Ecto.Changeset
 

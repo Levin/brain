@@ -11,7 +11,7 @@ defmodule Brain.Flashcards.Flashcard do
 
     timestamps()
 
-    many_to_many :concept, Concept, join_through: "card_concept" # I'm new!
+    many_to_many :concept, Concept, join_through: "card_concept"
   end
   
 

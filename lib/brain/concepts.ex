@@ -18,6 +18,8 @@ defmodule Brain.Concepts do
     |> Concept.changeset(attrs)
     |> Repo.insert()
   end
+  
+  
 
   def remove_concept!(id) do
     from(c in Concept, where: c.id == ^id) 
