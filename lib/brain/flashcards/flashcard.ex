@@ -1,4 +1,5 @@
 defmodule Brain.Flashcards.Flashcard do
+  alias Brain.Concepts.Concept
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -10,6 +11,7 @@ defmodule Brain.Flashcards.Flashcard do
 
     timestamps()
 
+    many_to_many :concept, Concept, join_through: "card_concept" # I'm new!
   end
   
 

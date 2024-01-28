@@ -8,7 +8,7 @@ defmodule Brain.Repo.Migrations.AddTableFlashcard do
       add :back, :text
       add :count, :integer
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
   end
