@@ -12,7 +12,7 @@ defmodule Brain.BrainScript do
     IO.puts("\n\n\n\n\n")
     
     choice =
-      IO.gets("\t") 
+      IO.gets("\t\n\n") 
       |> cleanup(false)
 
     case choice do
@@ -31,7 +31,12 @@ defmodule Brain.BrainScript do
       "ask" <> _ -> 
         ask_flashcards(String.split(choice, " "))
         user_prompt()
-      _ -> quit()
+      "recall" -> 
+        recall_today()
+        quit()
+      _ -> 
+        quit()
+
     end
 
   end
@@ -46,6 +51,10 @@ defmodule Brain.BrainScript do
     |> Enum.each(fn pair -> promt_flashcard(pair) end)
   end
  
+  def recall_today() do
+    Brain.Flashcards.recall_todays_flashcards()
+    |> Enum.each(fn pair -> promt_flashcard(pair) end)
+  end
 
   def add_flashcard() do
     IO.puts("\twhat should the front of your flashcard look like?\n")
@@ -79,7 +88,7 @@ defmodule Brain.BrainScript do
   end
 
   def quit() do
-    IO.puts("Well done today!!")
+    IO.puts("\tWell done today!!")
   end
 
   defp promt_flashcard({"", front, back}) do

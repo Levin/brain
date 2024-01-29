@@ -10,6 +10,23 @@ defmodule Brain.Flashcards do
     Repo.all(Flashcard)
   end
 
+
+  def recall_todays_flashcards() do
+    today = 
+      Date.utc_today()
+      |> Date.to_string()
+
+    boundary_bottom = today <> " 00:00:00"
+    boundary_top = today <> " 23:59:59"
+
+    query = from f in Flashcard,
+      where: f.inserted_at <= ^boundary_top and f.inserted_at >= ^boundary_bottom,
+      select: {"", f.front, f.back}
+
+      Repo.all(query)
+  end
+
+
   def get_random_flashcard_collection() do
     # TODO: these numbers have to be more elastic
     #       maybe fetch all and then get amount x in some other way
