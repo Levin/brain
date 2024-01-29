@@ -58,7 +58,7 @@ defmodule Brain.BrainScript do
     IO.puts("\twhat should the back of your flashcard look like?\n")
     back = 
       IO.stream(:stdio, :line)
-      |> Stream.take_while(&(&1 != "\t:done\n"))
+      |> Stream.take_while(&(&1 != ":done\n"))
       |> Enum.to_list()
       |> Enum.join(" ")
 
