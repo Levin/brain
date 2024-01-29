@@ -1,4 +1,5 @@
 defmodule Brain.BrainScript do
+alias Brain.Flashcards.Flashcard
 
   def user_prompt() do
     IO.puts("\n\n\n\n")
@@ -101,10 +102,8 @@ defmodule Brain.BrainScript do
     end
 
     # TODO: give rating
-    #rating = 
-    #  IO.gets("\t(h,m,e): \n")
-    #  |> cleanup(false)
     # TODO: increase count
+    Brain.Flashcards.update_flashcard(front)
   end
 
   defp promt_flashcard({id, front, back}) when is_integer(id) do
@@ -120,6 +119,8 @@ defmodule Brain.BrainScript do
     #rating = IO.gets("\t(h,m,e): \n")
 
     # TODO: increase count
+    Brain.Flashcards.update_flashcard!(id)
+
     # TODO: give rating
 
   end
@@ -137,6 +138,7 @@ defmodule Brain.BrainScript do
 
     # TODO: increase count
     # TODO: give rating
+    Brain.Flashcards.update_flashcard(front)
 
   end
 
